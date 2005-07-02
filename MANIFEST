@@ -1,3 +1,5 @@
+Changes
+README
 lib/Parse/IRCLog.pm
 lib/Parse/IRCLog/Result.pm
 Makefile.PL
@@ -7,5 +9,6 @@ t/defaults_patterns.t
 t/parse_file.t
 t/parse_line.t
 t/pod.t
+t/pod-coverage.t
 t/samples/sample01.log
 META.yml                                 Module meta-data (added by MakeMaker)

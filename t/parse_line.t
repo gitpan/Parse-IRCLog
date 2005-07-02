@@ -19,13 +19,13 @@ is_deeply(
 
 is_deeply(
 	$parser->parse_line('< @rjbs > I love this channel!'),
-	{ type => 'msg', timestamp => undef, nick => 'rjbs', text => 'I love this channel!' },
+	{ type => 'msg', timestamp => undef, nick_prefix => '@', nick => 'rjbs', text => 'I love this channel!' },
 	"boring msg"
 );
 
 is_deeply(
-	$parser->parse_line(' *  @q[uri] gives rjbs fudge!  '),
-	{ type => 'action', timestamp => undef, nick => 'q[uri]', text => 'gives rjbs fudge!  ' },
+	$parser->parse_line(' *  %q[uri] gives rjbs fudge!  '),
+	{ type => 'action', timestamp => undef, nick_prefix => '%', nick => 'q[uri]', text => 'gives rjbs fudge!  ' },
 	"boring action"
 );
 
@@ -42,7 +42,7 @@ is_deeply(
 );
 
 is_deeply(
-	$parser->parse_line(   ''),
-	{ type => 'unknown', text => undef },
+	$parser->parse_line(''),
+	{ type => 'unknown', text => '' },
 	"empty -> unknown"
 );

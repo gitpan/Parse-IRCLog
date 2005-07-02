@@ -15,7 +15,12 @@ ok(my @events = $result->events, "got list of events");
 is(@events, 3, "three events parsed");
 
 is_deeply(
-	$events[0],
-	{ type => 'msg', timestamp => undef, nick => 'rjbs', text => 'I love this channel!' },
-	"simple msg"
+  $events[0],
+  { type        => 'msg',
+    timestamp   => undef,
+    nick_prefix => '@',
+    nick        => 'rjbs',
+    text        => 'I love this channel!'
+  },
+  "simple msg"
 );

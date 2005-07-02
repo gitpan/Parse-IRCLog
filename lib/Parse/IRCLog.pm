@@ -5,11 +5,21 @@ use Parse::IRCLog::Result;
 use strict;
 use warnings;
 
-our $VERSION = sprintf "%d.%03d", q$Revision: 1.4 $ =~ /(\d+)/g;
+use Carp;
 
 =head1 NAME
 
 Parse::IRCLog -- parse internet relay chat logs
+
+=head1 VERSION
+
+version 1.10
+
+ $Id: IRCLog.pm,v 1.6 2005/07/02 00:11:55 rjbs Exp $
+
+=cut
+
+our $VERSION = '1.10';
 
 =head1 SYNOPSIS
 
@@ -55,7 +65,7 @@ guessing what ruleset to use.
 
 sub new { 
   my $class = shift;
-  return if ref $class;
+  croak "new is a class method" if ref $class;
 
   $class->construct->init;
 }
@@ -92,16 +102,18 @@ C<action> matches an action; that is, the result of /ME in IRC.  It should
 return the following matches:
 
  $1 - timestamp
- $2 - nick
- $3 - the action
+ $2 - nick prefix
+ $3 - nick
+ $4 - the action
 
 C<msg> matches a message; that is, the result of /MSG (or "normal talking") in
 IRC.  It should return the following matches:
 
  $1 - timestamp
- $2 - nick
+ $2 - nick prefix
+ $3 - nick
  $3 - channel
- $4 - the action
+ $5 - the action
 
 Read the source for a better idea as to how these regexps break down.  Oh, and
 for what it's worth, the default patterns are based on my boring, default irssi
@@ -110,6 +122,8 @@ configuration.  Expect more rulesets to be included in future distributions.
 =cut
 
 sub patterns {
+  return $_[0]{patterns} if ref $_[0] and defined $_[0]{patterns};
+
   my $p;
   $p->{nick} = qr/([\w\[\]\{\}\(\)^]+)/;
 
@@ -118,7 +132,7 @@ sub patterns {
   $p->{nick_container} = qr/
 	<
 	  \s*
-	  @?
+	  ([%@])?
 	  \s*
 	  $p->{nick}
 	  (?:
@@ -129,12 +143,12 @@ sub patterns {
 	>
   /x;
 
-  $p->{timestamp} = qr/\d\d:\d\d/;
+  $p->{timestamp} = qr/\[?(\d\d:\d\d(?::\d\d)?)?\]?/;
 
   $p->{action_leader} = qr/\*/;
 
 	$p->{msg} = qr/
-		(?:($p->{timestamp})\s)?
+		$p->{timestamp}
 		\s*
 		$p->{nick_container}
 		\s+
@@ -142,11 +156,11 @@ sub patterns {
 	/x;
 
 	$p->{action} = qr/
-		(?:($p->{timestamp})\s)?
+		$p->{timestamp}
 		\s*
 		$p->{action_leader}
 		\s+
-		@?
+		([%@])?
 		\s*
 		$p->{nick}
 		\s
@@ -190,10 +204,10 @@ If no match can be found, an "unknown" event is returned.
 sub parse_line {
 	my ($self, $line) = @_;
 	if ($line) {
-		return { type => 'msg',    timestamp => $1, nick => $2, text => $4 }
-			if $line =~ $self->{patterns}{msg};
-		return { type => 'action', timestamp => $1, nick => $2, text => $3 }
-			if $line =~ $self->{patterns}{action};
+		return { type => 'msg',    timestamp => $1, nick_prefix => $2, nick => $3, text => $5 }
+			if $line =~ $self->patterns->{msg};
+		return { type => 'action', timestamp => $1, nick_prefix => $2, nick => $3, text => $4 }
+			if $line =~ $self->patterns->{action};
 	}
 	return { type => 'unknown', text => $line };
 }
