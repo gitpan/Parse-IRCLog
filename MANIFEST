@@ -11,4 +11,6 @@ t/parse_line.t
 t/pod.t
 t/pod-coverage.t
 t/samples/sample01.log
+t/perl-critic.t
+LICENSE
 META.yml                                 Module meta-data (added by MakeMaker)

@@ -1,11 +1,12 @@
 
-package Parse::IRCLog;
-use Parse::IRCLog::Result;
-
 use strict;
 use warnings;
 
-use Carp;
+package Parse::IRCLog;
+
+use Carp ();
+use Parse::IRCLog::Result;
+use Symbol ();
 
 =head1 NAME
 
@@ -13,26 +14,26 @@ Parse::IRCLog -- parse internet relay chat logs
 
 =head1 VERSION
 
-version 1.10
+version 1.101
 
- $Id: IRCLog.pm,v 1.6 2005/07/02 00:11:55 rjbs Exp $
+ $Id: /my/cs/projects/irclog/trunk/lib/Parse/IRCLog.pm 27907 2006-11-13T15:40:37.121620Z rjbs  $
 
 =cut
 
-our $VERSION = '1.10';
+our $VERSION = '1.101';
 
 =head1 SYNOPSIS
 
-	use Parse::IRCLog;
+  use Parse::IRCLog;
 
-	$result = Parse::IRCLog->parse("perl-2004-02-01.log");
+  $result = Parse::IRCLog->parse("perl-2004-02-01.log");
 
-	my %to_print = ( msg => 1, action => 1 );
+  my %to_print = ( msg => 1, action => 1 );
 
-	for ($result->events) {
-		next unless $to_print{ $_->{type} };
-		print "$_->{nick}: $_->{text}\n";
-	}
+  for ($result->events) {
+    next unless $to_print{ $_->{type} };
+    print "$_->{nick}: $_->{text}\n";
+  }
 
 =head1 DESCRIPTION
 
@@ -65,7 +66,7 @@ guessing what ruleset to use.
 
 sub new { 
   my $class = shift;
-  croak "new is a class method" if ref $class;
+  Carp::croak "new is a class method" if ref $class;
 
   $class->construct->init;
 }
@@ -130,42 +131,42 @@ sub patterns {
   $p->{chan} = qr/((?:&|#)[\w\[\]\{\}\(\)&#^]*)/;
 
   $p->{nick_container} = qr/
-	<
-	  \s*
-	  ([%@])?
-	  \s*
-	  $p->{nick}
-	  (?:
-			:
-			$p->{chan}
-	  )?
-	  \s*
-	>
+  <
+    \s*
+    ([%@])?
+    \s*
+    $p->{nick}
+    (?:
+      :
+      $p->{chan}
+    )?
+    \s*
+  >
   /x;
 
   $p->{timestamp} = qr/\[?(\d\d:\d\d(?::\d\d)?)?\]?/;
 
   $p->{action_leader} = qr/\*/;
 
-	$p->{msg} = qr/
-		$p->{timestamp}
-		\s*
-		$p->{nick_container}
-		\s+
-		(.+)
-	/x;
+  $p->{msg} = qr/
+    $p->{timestamp}
+    \s*
+    $p->{nick_container}
+    \s+
+    (.+)
+  /x;
 
-	$p->{action} = qr/
-		$p->{timestamp}
-		\s*
-		$p->{action_leader}
-		\s+
-		([%@])?
-		\s*
-		$p->{nick}
-		\s
-		(.+)
-	/x;
+  $p->{action} = qr/
+    $p->{timestamp}
+    \s*
+    $p->{action_leader}
+    \s+
+    ([%@])?
+    \s*
+    $p->{nick}
+    \s
+    (.+)
+  /x;
 
   $p;
 }
@@ -183,11 +184,12 @@ sub parse {
   my $self = shift;
   $self = $self->new unless ref $self;
 
-	open FILE, shift;
+  my $symbol = Symbol::gensym;
+  open $symbol, "<", $_[0] or Carp::croak "couldn't open $_[0]: $!";
 
-	my @events;
-	push @events, $self->parse_line($_) while (<FILE>);
-	Parse::IRCLog::Result->new(@events);
+  my @events;
+  push @events, $self->parse_line($_) while (<$symbol>);
+  Parse::IRCLog::Result->new(@events);
 }
 
 =item C<< parse_line($line) >>
@@ -202,14 +204,14 @@ If no match can be found, an "unknown" event is returned.
 =cut
 
 sub parse_line {
-	my ($self, $line) = @_;
-	if ($line) {
-		return { type => 'msg',    timestamp => $1, nick_prefix => $2, nick => $3, text => $5 }
-			if $line =~ $self->patterns->{msg};
-		return { type => 'action', timestamp => $1, nick_prefix => $2, nick => $3, text => $4 }
-			if $line =~ $self->patterns->{action};
-	}
-	return { type => 'unknown', text => $line };
+  my ($self, $line) = @_;
+  if ($line) {
+    return { type => 'msg',    timestamp => $1, nick_prefix => $2, nick => $3, text => $5 }
+      if $line =~ $self->patterns->{msg};
+    return { type => 'action', timestamp => $1, nick_prefix => $2, nick => $3, text => $4 }
+      if $line =~ $self->patterns->{action};
+  }
+  return { type => 'unknown', text => $line };
 }
 
 =back
@@ -225,7 +227,7 @@ only one or two patterns.  For example, to use the default C<nick> pattern but
 override the C<nick_container> or C<action_leader>.  This sounds like a very
 good idea, actually, now that I write it down.
 
-=head1 AUTHORS
+=head1 AUTHOR
 
 Ricardo SIGNES E<lt>rjbs@cpan.orgE<gt>
 
