@@ -1,11 +1,15 @@
 --- #YAML:1.0
 name:                Parse-IRCLog
-version:             1.101
-abstract:            ~
+version:             1.102
+abstract:            parse internet relay chat logs
 license:             perl
-generated_by:        ExtUtils::MakeMaker version 6.31
+author:              
+    - Ricardo SIGNES <rjbs@cpan.org>
+generated_by:        ExtUtils::MakeMaker version 6.44
 distribution_type:   module
 requires:     
+    Carp:                          0
+    Symbol:                        0
 meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.2.html
-    version: 1.2
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3

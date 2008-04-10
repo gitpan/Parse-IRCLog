@@ -10,17 +10,15 @@ use Symbol ();
 
 =head1 NAME
 
-Parse::IRCLog -- parse internet relay chat logs
+Parse::IRCLog - parse internet relay chat logs
 
 =head1 VERSION
 
-version 1.101
-
- $Id: /my/cs/projects/irclog/trunk/lib/Parse/IRCLog.pm 27907 2006-11-13T15:40:37.121620Z rjbs  $
+version 1.102
 
 =cut
 
-our $VERSION = '1.101';
+our $VERSION = '1.102';
 
 =head1 SYNOPSIS
 
