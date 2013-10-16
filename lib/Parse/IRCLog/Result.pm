@@ -1,19 +1,41 @@
-package Parse::IRCLog::Result;
-
 use strict;
 use warnings;
+package Parse::IRCLog::Result;
+{
+  $Parse::IRCLog::Result::VERSION = '1.105';
+}
+# ABSTRACT: results of parsing an IRC logfile
+
+
+sub new {
+  my $class = shift;
+	my @events = @_;
+  return if ref $class;
+	return unless @events;
+
+  bless { events => \@events } => $class;
+}
+
+
+sub events {
+  my $self = shift;
+  @{$self->{events}};
+}
+
+
+1;
+
+__END__
+
+=pod
 
 =head1 NAME
 
-Parse::IRCLog::Result -- results of parsing an IRC logfile
+Parse::IRCLog::Result - results of parsing an IRC logfile
 
 =head1 VERSION
 
-version 1.104
-
-=cut
-
-our $VERSION = '1.104';
+version 1.105
 
 =head1 SYNOPSIS
 
@@ -34,36 +56,16 @@ See L<Parse::IRCLog>.  This module describes the result of parsing.
 
 =head1 METHODS
 
-=over
+=head2 new
 
-=item C<< new(@events) >>
+  my $result = $class->new(@events);
 
 This method is not user-serviceable.  It is called by Parse::IRCLog to create
 the Result object.
 
-=cut
-
-sub new { 
-  my $class = shift;
-	my @events = @_;
-  return if ref $class;
-	return unless @events;
-	
-  bless { events => \@events } => $class;
-}
-
-=item C<< events >>
+=head2 events
 
 This method returns the list of events in the result set.
-
-=cut
-
-sub events {
-  my $self = shift;
-  @{$self->{events}};
-}
-
-=back
 
 =head1 TODO
 
@@ -73,15 +75,13 @@ tied array object or something.  This can wait.
 
 =head1 AUTHOR
 
-Ricardo SIGNES E<lt>rjbs@cpan.orgE<gt>
+Ricardo SIGNES <rjbs@cpan.org>
 
-=head1 COPYRIGHT
+=head1 COPYRIGHT AND LICENSE
 
-Copyright 2004 by Ricardo Signes.
+This software is copyright (c) 2004 by Ricardo SIGNES.
 
-This program is free software; you can redistribute it and/or modify it under
-the same terms as Perl itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
-
-1;

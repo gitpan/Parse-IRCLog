@@ -1,14 +1,13 @@
-Parse::IRCLog -- parse internet relay chat logs
 
-This module provides a simple framework to parse IRC logs in arbitrary
-formats.
 
-A parser has a set of regular expressions for matching different events
-that occur in an IRC log, such as "msg" and "action" events. Each line
-in the log is matched against these rules and a result object,
-representing the event stream, is returned.
+This archive contains the distribution Parse-IRCLog,
+version 1.105:
 
-The rule set, described in greated detail below, can be customized by
-subclassing Parse::IRCLog. In this way, Parse::IRCLog can provide a
-generic interface for log analysis across many log formats, including
-custom formats.
+  parse internet relay chat logs
+
+This software is copyright (c) 2004 by Ricardo SIGNES.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+
